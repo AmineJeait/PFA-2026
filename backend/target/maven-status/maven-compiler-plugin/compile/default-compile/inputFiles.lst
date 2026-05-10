@@ -1,12 +1,15 @@
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/Pfa2026Application.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/common/ApiResponse.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/common/BaseEntity.java
+/home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/config/DatabaseSeeder.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/config/SecurityConfig.java
+/home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/exception/GlobalExceptionHandler.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/controller/AttendanceController.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/dto/AttendanceDto.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/entity/Attendance.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/repository/AttendanceRepository.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/service/AttendanceService.java
+/home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/AuthController.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/controller/AuthController.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/dto/AuthDto.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/entity/User.java

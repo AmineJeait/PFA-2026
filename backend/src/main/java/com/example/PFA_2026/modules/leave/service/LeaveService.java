@@ -56,11 +56,12 @@ public class LeaveService {
 
     @Transactional(readOnly = true)
     public List<LeaveDto.LeaveResponse> getMyLeaves() {
-        Employee employee = getCurrentEmployee();
-        return leaveRequestRepository.findByEmployeeId(employee.getId())
-                .stream()
-                .map(LeaveDto.LeaveResponse::fromEntity)
-                .toList();
+        return employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .map(employee -> leaveRequestRepository.findByEmployeeId(employee.getId())
+                        .stream()
+                        .map(LeaveDto.LeaveResponse::fromEntity)
+                        .toList())
+                .orElse(List.of());
     }
 
     // ─── Get one leave request ─────────────────────────────────────────────

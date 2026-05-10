@@ -16,21 +16,27 @@ async function api(method, path, body) {
     throw new Error("Impossible de contacter le serveur. Vérifiez votre connexion.");
   }
 
-  // handle 401 by dispatching a custom event — AuthContext listens and logs out
-  if (res.status === 401) {
+  const text = await res.text();
+  let json = null;
+  if (text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      json = null;
+    }
+  }
+
+  if (res.status === 401 || res.status === 403) {
     window.dispatchEvent(new Event("rh:unauthorized"));
-    throw new Error("Session expirée. Veuillez vous reconnecter.");
+    throw new Error(json?.message || "Session expirée. Veuillez vous reconnecter.");
   }
 
-  let json;
-  try {
-    json = await res.json();
-  } catch {
-    throw new Error(`Réponse invalide du serveur (HTTP ${res.status}).`);
+  if (!res.ok) {
+    throw new Error(json?.message || `Erreur serveur (${res.status}).`);
   }
 
-  if (!json.success) {
-    throw new Error(json.message || "Une erreur est survenue.");
+  if (!json?.success) {
+    throw new Error(json?.message || "Une erreur est survenue.");
   }
 
   return json.data;

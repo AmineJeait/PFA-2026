@@ -102,11 +102,12 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public List<AttendanceDto.AttendanceResponse> getMyAttendances() {
-        Employee employee = getCurrentEmployee();
-        return attendanceRepository.findByEmployeeId(employee.getId())
-                .stream()
-                .map(AttendanceDto.AttendanceResponse::fromEntity)
-                .toList();
+        return employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .map(employee -> attendanceRepository.findByEmployeeId(employee.getId())
+                        .stream()
+                        .map(AttendanceDto.AttendanceResponse::fromEntity)
+                        .toList())
+                .orElse(List.of());
     }
 
     // ─── Get by Employee ──────────────────────────────────────────────────

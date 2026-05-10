@@ -5,10 +5,13 @@ import com.example.PFA_2026.modules.auth.repository.UserRepository;
 import com.example.PFA_2026.modules.auth.entity.User;
 import com.example.PFA_2026.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -41,18 +44,21 @@ public class AuthService {
     }
 
     public AuthDto.AuthResponse login(AuthDto.LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try {
+            var authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+            User user = (User) authentication.getPrincipal();
 
-        return AuthDto.AuthResponse.builder()
-                .accessToken(jwtService.generateToken(user))
-                .refreshToken(jwtService.generateRefreshToken(user))
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .build();
+            return AuthDto.AuthResponse.builder()
+                    .accessToken(jwtService.generateToken(user))
+                    .refreshToken(jwtService.generateRefreshToken(user))
+                    .email(user.getEmail())
+                    .role(user.getRole().name())
+                    .build();
+        } catch (AuthenticationException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou mot de passe invalide");
+        }
     }
 }

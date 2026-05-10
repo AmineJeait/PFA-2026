@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-import { ROLES } from "./constants";
+import { ROLES } from "./components/layout/constants";
 import Layout from "./components/layout/Layout";
 
 // pages
 import LoginPage           from "./pages/LoginPage";
+import RegisterPage        from "./pages/RegisterPage";
 import Dashboard           from "./pages/Dashboard";
 import EmployeeList        from "./pages/employees/EmployeeList";
 import EmployeeDetail      from "./pages/employees/EmployeeDetail";
@@ -35,9 +36,15 @@ function Guard({ roles, children }) {
 export default function App() {
   const { user, login } = useAuth();
 
-  // not authenticated → show login
+  // not authenticated → show auth routes
   if (!user) {
-    return <LoginPage onLogin={login} />;
+    return (
+      <Routes>
+        <Route path="/register" element={<RegisterPage onLogin={login} />} />
+        <Route path="/login" element={<LoginPage onLogin={login} />} />
+        <Route path="*" element={<LoginPage onLogin={login} />} />
+      </Routes>
+    );
   }
 
   return (

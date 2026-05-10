@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { NAV_ITEMS, ROLE_LABELS, ROLE_COLORS } from "../../constants";
+import { NAV_ITEMS, ROLE_LABELS, ROLE_COLORS } from "../../components/layout/constants";
 
 const S = {
   sidebar: {
@@ -77,7 +78,7 @@ const S = {
   linkActive: {
     background: "rgba(108,99,255,0.12)",
     color: "#8b83ff",
-    borderLeftColor: "#6c63ff",
+    borderLeft: "3px solid #6c63ff",
   },
   linkHover: {
     background: "rgba(255,255,255,0.04)",
@@ -243,5 +244,3 @@ export default function Sidebar() {
   );
 }
 
-// useState import needed for NavItem hover state
-import { useState } from "react";

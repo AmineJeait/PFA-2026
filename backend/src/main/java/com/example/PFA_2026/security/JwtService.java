@@ -44,7 +44,9 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername())
+        String username = extractUsername(token);
+        return username != null
+                && username.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
     }
 
@@ -53,19 +55,28 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        return resolver.apply(extractAllClaims(token));
+        Claims claims = extractAllClaims(token);
+        return claims == null ? null : resolver.apply(claims);
     }
 
     private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        Date expiration = extractClaim(token, Claims::getExpiration);
+        return expiration != null && expiration.before(new Date());
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException | IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private SecretKey getSigningKey() {

@@ -60,7 +60,9 @@ export default function Button({
   onClick,
   type     = "button",
   fullWidth = false,
+  style: customStyle = {},
   children,
+  ...rest
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -76,6 +78,7 @@ export default function Button({
     ...(hovered && !isDisabled ? v.hover : {}),
     ...(isDisabled ? { opacity: 0.5, cursor: "not-allowed" } : {}),
     ...(fullWidth  ? { width: "100%" } : {}),
+    ...customStyle,
   };
 
   return (
@@ -86,6 +89,7 @@ export default function Button({
       disabled={isDisabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      {...rest}
     >
       {loading && <Spinner size={14} color="currentColor" />}
       {children}
