@@ -1,121 +1,136 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./hooks/useAuth";
+import { ROLES } from "./constants";
+import Layout from "./components/layout/Layout";
 
-function App() {
-  const [count, setCount] = useState(0)
+// pages
+import LoginPage           from "./pages/LoginPage";
+import Dashboard           from "./pages/Dashboard";
+import EmployeeList        from "./pages/employees/EmployeeList";
+import EmployeeDetail      from "./pages/employees/EmployeeDetail";
+import DepartmentList      from "./pages/departments/DepartmentList";
+import LeaveList           from "./pages/leaves/LeaveList";
+import MyLeaves            from "./pages/leaves/MyLeaves";
+import PayrollList         from "./pages/payroll/PayrollList";
+import PayrollDetail       from "./pages/payroll/PayrollDetail";
+import JobList             from "./pages/recruitment/JobList";
+import ApplicationList     from "./pages/recruitment/ApplicationList";
+import AttendanceList      from "./pages/attendance/AttendanceList";
+import MyAttendance        from "./pages/attendance/MyAttendance";
+import MonthlyReport       from "./pages/attendance/MonthlyReport";
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+const { ADMIN, RH, MANAGER, EMPLOYEE } = ROLES;
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+/**
+ * Wraps a page and redirects to "/" if the current user's role
+ * is not in the allowed list.
+ */
+function Guard({ roles, children }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
+  return children;
 }
 
-export default App
+export default function App() {
+  const { user, login } = useAuth();
+
+  // not authenticated → show login
+  if (!user) {
+    return <LoginPage onLogin={login} />;
+  }
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+
+        {/* Dashboard — all roles */}
+        <Route index element={<Dashboard />} />
+
+        {/* Employees */}
+        <Route
+          path="employees"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <EmployeeList />
+            </Guard>
+          }
+        />
+        <Route
+          path="employees/:id"
+          element={
+            <Guard roles={[ADMIN, RH, MANAGER]}>
+              <EmployeeDetail />
+            </Guard>
+          }
+        />
+
+        {/* Departments */}
+        <Route
+          path="departments"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <DepartmentList />
+            </Guard>
+          }
+        />
+
+        {/* Leaves */}
+        <Route
+          path="leaves"
+          element={
+            <Guard roles={[ADMIN, RH, MANAGER]}>
+              <LeaveList />
+            </Guard>
+          }
+        />
+        <Route path="leaves/my" element={<MyLeaves />} />
+
+        {/* Payroll */}
+        <Route
+          path="payroll"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <PayrollList />
+            </Guard>
+          }
+        />
+        <Route path="payroll/:id" element={<PayrollDetail />} />
+
+        {/* Recruitment — all roles */}
+        <Route path="recruitment" element={<JobList />} />
+        <Route
+          path="recruitment/:id/applications"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <ApplicationList />
+            </Guard>
+          }
+        />
+
+        {/* Attendance */}
+        <Route
+          path="attendance"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <AttendanceList />
+            </Guard>
+          }
+        />
+        <Route path="attendance/my"     element={<MyAttendance />} />
+        <Route
+          path="attendance/report"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <MonthlyReport />
+            </Guard>
+          }
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+      </Route>
+    </Routes>
+  );
+}
