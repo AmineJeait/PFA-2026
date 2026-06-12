@@ -198,6 +198,62 @@ public class PayrollService {
         return BigDecimal.valueOf(ir).setScale(2, RoundingMode.HALF_UP);
     }
 
+    // ─── Bulk Generate ─────────────────────────────────────────────────────
+
+    @Transactional
+    public PayrollDto.BulkPayrollResult generateBulkPayroll(PayrollDto.BulkGenerateRequest request) {
+        List<Employee> employees = employeeRepository.findAll().stream()
+                .filter(e -> e.getStatus() == Employee.EmployeeStatus.ACTIF)
+                .toList();
+
+        int generated = 0, skipped = 0, failed = 0;
+        java.util.List<String> errors = new java.util.ArrayList<>();
+
+        for (Employee employee : employees) {
+            if (payrollRepository.existsByEmployeeIdAndMonthAndYear(
+                    employee.getId(), request.getMonth(), request.getYear())) {
+                skipped++;
+                continue;
+            }
+            if (employee.getBaseSalary() == null) {
+                failed++;
+                errors.add(employee.getFullName() + ": salaire de base non défini");
+                continue;
+            }
+            try {
+                BigDecimal baseSalary = employee.getBaseSalary();
+                BigDecimal cnss      = calculateCnss(baseSalary);
+                BigDecimal amo       = calculateAmo(baseSalary);
+                BigDecimal ir        = calculateIr(baseSalary, cnss, amo);
+                BigDecimal netSalary = baseSalary.subtract(cnss).subtract(amo).subtract(ir);
+
+                payrollRepository.save(Payroll.builder()
+                        .employee(employee)
+                        .month(request.getMonth())
+                        .year(request.getYear())
+                        .baseSalary(baseSalary)
+                        .bonuses(BigDecimal.ZERO)
+                        .deductions(BigDecimal.ZERO)
+                        .cnss(cnss)
+                        .amo(amo)
+                        .ir(ir)
+                        .netSalary(netSalary)
+                        .build());
+                generated++;
+            } catch (Exception e) {
+                failed++;
+                errors.add(employee.getFullName() + ": " + e.getMessage());
+            }
+        }
+
+        return PayrollDto.BulkPayrollResult.builder()
+                .generated(generated)
+                .skipped(skipped)
+                .failed(failed)
+                .errors(errors)
+                .build();
+    }
+
     // ─── Helper ────────────────────────────────────────────────────────────
 
     private Payroll findPayrollOrThrow(Long id) {

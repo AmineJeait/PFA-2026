@@ -102,7 +102,7 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public List<AttendanceDto.AttendanceResponse> getMyAttendances() {
-        return employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+        return employeeRepository.findByUserEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .map(employee -> attendanceRepository.findByEmployeeId(employee.getId())
                         .stream()
                         .map(AttendanceDto.AttendanceResponse::fromEntity)
@@ -172,7 +172,7 @@ public class AttendanceService {
 
     private Employee getCurrentEmployee() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return employeeRepository.findByEmail(email)
+        return employeeRepository.findByUserEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found for current user"));
     }
 }

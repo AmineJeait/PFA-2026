@@ -1,14 +1,15 @@
 import { useAuth } from "../../hooks/useAuth";
+import { useTheme } from "../../hooks/useTheme";
 
 const S = {
   bar: {
     height: 56,
-    borderBottom: "1px solid #2a2a38",
+    borderBottom: "1px solid var(--border)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     padding: "0 2rem",
-    background: "#18181e",
+    background: "var(--surface)",
     flexShrink: 0,
     position: "sticky",
     top: 0,
@@ -22,12 +23,12 @@ const S = {
   title: {
     fontSize: 15,
     fontWeight: 600,
-    color: "#f0effe",
+    color: "var(--text)",
     lineHeight: 1.2,
   },
   subtitle: {
     fontSize: 12,
-    color: "#555470",
+    color: "var(--dim)",
   },
   right: {
     display: "flex",
@@ -36,19 +37,34 @@ const S = {
   },
   greeting: {
     fontSize: 12,
-    color: "#8886a0",
+    color: "var(--muted)",
   },
   greetingName: {
-    color: "#c4c2dc",
+    color: "var(--text-2)",
     fontWeight: 500,
   },
   dot: {
     width: 7,
     height: 7,
     borderRadius: "50%",
-    background: "#22c77a",
+    background: "var(--success)",
     display: "inline-block",
     marginRight: 6,
+  },
+  themeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    border: "1px solid var(--border)",
+    background: "var(--card)",
+    color: "var(--muted)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 15,
+    transition: "all .12s",
+    flexShrink: 0,
   },
 };
 
@@ -59,13 +75,9 @@ function greeting() {
   return "Bonsoir";
 }
 
-/**
- * Props:
- *   title    {string}  — page name, e.g. "Employés"
- *   subtitle {string}  — optional breadcrumb or description
- */
 export default function TopBar({ title, subtitle }) {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const name = user?.email?.split("@")[0] ?? "";
 
@@ -82,6 +94,24 @@ export default function TopBar({ title, subtitle }) {
           {greeting()},{" "}
           <span style={S.greetingName}>{name}</span>
         </span>
+
+        <button
+          style={S.themeBtn}
+          onClick={toggleTheme}
+          title={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--accent-dim)";
+            e.currentTarget.style.color = "var(--accent)";
+            e.currentTarget.style.borderColor = "var(--accent)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "var(--card)";
+            e.currentTarget.style.color = "var(--muted)";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
       </div>
     </header>
   );

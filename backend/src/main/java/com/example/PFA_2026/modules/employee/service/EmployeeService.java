@@ -7,6 +7,7 @@ import com.example.PFA_2026.modules.employee.entity.Employee;
 import com.example.PFA_2026.modules.employee.repository.EmployeeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,5 +112,27 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employé non trouvé"));
         employeeRepository.delete(employee);
+    }
+
+    public EmployeeDto.Response getMe() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return EmployeeDto.Response.fromEntity(
+                employeeRepository.findByUserEmail(email)
+                        .orElseThrow(() -> new EntityNotFoundException("Employé non trouvé"))
+        );
+    }
+
+    @Transactional
+    public EmployeeDto.Response updateMe(EmployeeDto.UpdateMyProfileRequest request) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Employee employee = employeeRepository.findByUserEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Employé non trouvé"));
+
+        if (request.getPhone() != null)       employee.setPhone(request.getPhone());
+        if (request.getAddress() != null)     employee.setAddress(request.getAddress());
+        if (request.getDateOfBirth() != null) employee.setDateOfBirth(request.getDateOfBirth());
+        if (request.getCin() != null)         employee.setCin(request.getCin());
+
+        return EmployeeDto.Response.fromEntity(employeeRepository.save(employee));
     }
 }

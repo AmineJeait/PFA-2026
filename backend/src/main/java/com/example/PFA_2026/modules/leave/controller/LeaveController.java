@@ -29,7 +29,7 @@ public class LeaveController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RH')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH', 'MANAGER')")
     public ResponseEntity<ApiResponse<List<LeaveDto.LeaveResponse>>> getAllLeaves() {
         return ResponseEntity.ok(ApiResponse.ok("Leave requests fetched successfully",
                 leaveService.getAllLeaves()));
@@ -71,5 +71,12 @@ public class LeaveController {
     public ResponseEntity<ApiResponse<Void>> cancelLeave(@PathVariable Long id) {
         leaveService.cancelLeave(id);
         return ResponseEntity.ok(ApiResponse.ok("Leave request cancelled successfully", null));
+    }
+
+    @GetMapping("/balance")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH', 'MANAGER', 'EMPLOYEE')")
+    public ResponseEntity<ApiResponse<List<LeaveDto.LeaveBalanceResponse>>> getLeaveBalance() {
+        return ResponseEntity.ok(ApiResponse.ok("Leave balance fetched successfully",
+                leaveService.getLeaveBalance()));
     }
 }

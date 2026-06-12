@@ -44,7 +44,7 @@ public class PayrollController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RH', 'MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH')")
     public ResponseEntity<ApiResponse<PayrollDto.PayrollResponse>> getPayrollById(
             @PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Payroll fetched successfully",
@@ -65,5 +65,14 @@ public class PayrollController {
             @PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Payroll marked as paid successfully",
                 payrollService.payPayroll(id)));
+    }
+
+    @PostMapping("/generate-bulk")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH')")
+    public ResponseEntity<ApiResponse<PayrollDto.BulkPayrollResult>> generateBulkPayroll(
+            @Valid @RequestBody PayrollDto.BulkGenerateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Bulk payroll generation completed",
+                        payrollService.generateBulkPayroll(request)));
     }
 }

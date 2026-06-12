@@ -7,9 +7,12 @@ import Layout from "./components/layout/Layout";
 import LoginPage           from "./pages/LoginPage";
 import RegisterPage        from "./pages/RegisterPage";
 import Dashboard           from "./pages/Dashboard";
+import ProfilePage         from "./pages/ProfilePage";
+import StatsPage           from "./pages/StatsPage";
 import EmployeeList        from "./pages/employees/EmployeeList";
 import EmployeeDetail      from "./pages/employees/EmployeeDetail";
 import DepartmentList      from "./pages/departments/DepartmentList";
+import DepartmentDetail    from "./pages/departments/DepartmentDetail";
 import LeaveList           from "./pages/leaves/LeaveList";
 import MyLeaves            from "./pages/leaves/MyLeaves";
 import PayrollList         from "./pages/payroll/PayrollList";
@@ -22,10 +25,6 @@ import MonthlyReport       from "./pages/attendance/MonthlyReport";
 
 const { ADMIN, RH, MANAGER, EMPLOYEE } = ROLES;
 
-/**
- * Wraps a page and redirects to "/" if the current user's role
- * is not in the allowed list.
- */
 function Guard({ roles, children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
@@ -36,7 +35,6 @@ function Guard({ roles, children }) {
 export default function App() {
   const { user, login } = useAuth();
 
-  // not authenticated → show auth routes
   if (!user) {
     return (
       <Routes>
@@ -53,6 +51,19 @@ export default function App() {
 
         {/* Dashboard — all roles */}
         <Route index element={<Dashboard />} />
+
+        {/* Profile — all roles */}
+        <Route path="profile" element={<ProfilePage />} />
+
+        {/* Stats — admin/RH */}
+        <Route
+          path="stats"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <StatsPage />
+            </Guard>
+          }
+        />
 
         {/* Employees */}
         <Route
@@ -81,6 +92,14 @@ export default function App() {
             </Guard>
           }
         />
+        <Route
+          path="departments/:id"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <DepartmentDetail />
+            </Guard>
+          }
+        />
 
         {/* Leaves */}
         <Route
@@ -102,7 +121,14 @@ export default function App() {
             </Guard>
           }
         />
-        <Route path="payroll/:id" element={<PayrollDetail />} />
+        <Route
+          path="payroll/:id"
+          element={
+            <Guard roles={[ADMIN, RH]}>
+              <PayrollDetail />
+            </Guard>
+          }
+        />
 
         {/* Recruitment — all roles */}
         <Route path="recruitment" element={<JobList />} />
@@ -124,7 +150,7 @@ export default function App() {
             </Guard>
           }
         />
-        <Route path="attendance/my"     element={<MyAttendance />} />
+        <Route path="attendance/my" element={<MyAttendance />} />
         <Route
           path="attendance/report"
           element={

@@ -11,8 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +60,7 @@ public class LeaveService {
 
     @Transactional(readOnly = true)
     public List<LeaveDto.LeaveResponse> getMyLeaves() {
-        return employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+        return employeeRepository.findByUserEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .map(employee -> leaveRequestRepository.findByEmployeeId(employee.getId())
                         .stream()
                         .map(LeaveDto.LeaveResponse::fromEntity)
@@ -126,6 +130,43 @@ public class LeaveService {
         leaveRequestRepository.delete(leave);
     }
 
+    // ─── Leave balance ────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public List<LeaveDto.LeaveBalanceResponse> getLeaveBalance() {
+        Employee employee = getCurrentEmployee();
+        int year = LocalDate.now().getYear();
+
+        Map<LeaveRequest.LeaveType, Integer> allowances = Map.of(
+            LeaveRequest.LeaveType.CONGE_PAYE,  18,
+            LeaveRequest.LeaveType.MALADIE,     30,
+            LeaveRequest.LeaveType.MATERNITE,   98,
+            LeaveRequest.LeaveType.SANS_SOLDE,   0,
+            LeaveRequest.LeaveType.AUTRE,         5
+        );
+
+        List<LeaveRequest> approvedThisYear = leaveRequestRepository
+                .findByEmployeeId(employee.getId())
+                .stream()
+                .filter(l -> l.getStatus() == LeaveRequest.LeaveStatus.APPROUVE
+                          && l.getStartDate().getYear() == year)
+                .toList();
+
+        return Arrays.stream(LeaveRequest.LeaveType.values()).map(type -> {
+            int allowed = allowances.getOrDefault(type, 0);
+            int used = approvedThisYear.stream()
+                    .filter(l -> l.getType() == type)
+                    .mapToInt(l -> (int) ChronoUnit.DAYS.between(l.getStartDate(), l.getEndDate()) + 1)
+                    .sum();
+            return LeaveDto.LeaveBalanceResponse.builder()
+                    .type(type.name())
+                    .allowedDays(allowed)
+                    .usedDays(used)
+                    .remainingDays(Math.max(0, allowed - used))
+                    .build();
+        }).toList();
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────
 
     private LeaveRequest findLeaveOrThrow(Long id) {
@@ -135,7 +176,7 @@ public class LeaveService {
 
     private Employee getCurrentEmployee() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return employeeRepository.findByEmail(email)
+        return employeeRepository.findByUserEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found for current user"));
     }
 }

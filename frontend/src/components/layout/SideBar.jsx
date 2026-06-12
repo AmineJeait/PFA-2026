@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { NAV_ITEMS, ROLE_LABELS, ROLE_COLORS } from "../../components/layout/constants";
@@ -8,8 +8,8 @@ const S = {
     width: 220,
     minWidth: 220,
     height: "100vh",
-    background: "#18181e",
-    borderRight: "1px solid #2a2a38",
+    background: "var(--surface)",
+    borderRight: "1px solid var(--border)",
     display: "flex",
     flexDirection: "column",
     position: "sticky",
@@ -21,14 +21,14 @@ const S = {
     alignItems: "center",
     gap: 10,
     padding: "20px 16px 16px",
-    borderBottom: "1px solid #2a2a38",
+    borderBottom: "1px solid var(--border)",
     flexShrink: 0,
   },
   logoIcon: {
     width: 34,
     height: 34,
     borderRadius: 9,
-    background: "#6c63ff",
+    background: "var(--accent)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -41,12 +41,12 @@ const S = {
   logoText: {
     fontSize: 14,
     fontWeight: 600,
-    color: "#f0effe",
+    color: "var(--text)",
     lineHeight: 1.2,
   },
   logoSub: {
     fontSize: 11,
-    color: "#555470",
+    color: "var(--dim)",
     marginTop: 1,
   },
   nav: {
@@ -58,7 +58,7 @@ const S = {
     padding: "16px 16px 4px",
     fontSize: 10,
     fontWeight: 600,
-    color: "#555470",
+    color: "var(--dim)",
     letterSpacing: "0.6px",
   },
   link: {
@@ -68,7 +68,7 @@ const S = {
     padding: "8px 16px",
     fontSize: 13,
     fontWeight: 500,
-    color: "#8886a0",
+    color: "var(--muted)",
     textDecoration: "none",
     borderLeft: "3px solid transparent",
     transition: "all .12s",
@@ -76,13 +76,13 @@ const S = {
     userSelect: "none",
   },
   linkActive: {
-    background: "rgba(108,99,255,0.12)",
-    color: "#8b83ff",
-    borderLeft: "3px solid #6c63ff",
+    background: "var(--accent-dim)",
+    color: "var(--accent)",
+    borderLeft: "3px solid var(--accent)",
   },
   linkHover: {
-    background: "rgba(255,255,255,0.04)",
-    color: "#c4c2dc",
+    background: "rgba(128,128,128,0.06)",
+    color: "var(--text-2)",
   },
   icon: {
     fontSize: 15,
@@ -92,7 +92,7 @@ const S = {
     opacity: 0.8,
   },
   bottom: {
-    borderTop: "1px solid #2a2a38",
+    borderTop: "1px solid var(--border)",
     padding: "12px 16px",
     flexShrink: 0,
   },
@@ -106,13 +106,13 @@ const S = {
     width: 30,
     height: 30,
     borderRadius: "50%",
-    background: "rgba(108,99,255,0.2)",
+    background: "var(--accent-dim)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontSize: 11,
     fontWeight: 600,
-    color: "#8b83ff",
+    color: "var(--accent)",
     flexShrink: 0,
   },
   userInfo: {
@@ -122,7 +122,7 @@ const S = {
   },
   userEmail: {
     fontSize: 12,
-    color: "#c4c2dc",
+    color: "var(--text-2)",
     fontWeight: 500,
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -136,15 +136,15 @@ const S = {
     padding: "1px 7px",
     borderRadius: 20,
     background: ROLE_COLORS[role]?.bg || "rgba(136,134,160,0.15)",
-    color: ROLE_COLORS[role]?.text || "#8886a0",
+    color: ROLE_COLORS[role]?.text || "var(--muted)",
   }),
   logoutBtn: {
     width: "100%",
     padding: "7px 12px",
     background: "transparent",
-    border: "1px solid #2a2a38",
+    border: "1px solid var(--border)",
     borderRadius: 8,
-    color: "#8886a0",
+    color: "var(--muted)",
     fontSize: 12,
     fontWeight: 500,
     cursor: "pointer",
@@ -232,8 +232,8 @@ export default function Sidebar() {
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "#2a2a38";
-            e.currentTarget.style.color = "#8886a0";
+            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.color = "var(--muted)";
           }}
         >
           <span style={{ fontSize: 13 }}>⎋</span>
@@ -243,4 +243,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-

@@ -1,45 +1,43 @@
 import { useState } from "react";
-import { get, put, del } from "../../api/client";
+import { get, post, put, del } from "../../api/client";
 import { useApi } from "../../hooks/useApi";
 import { useAuth } from "../../hooks/useAuth";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
+import LeaveForm from "./LeaveForm";
 import { formatDateRange } from "../../utils/formatDate";
 
 const S = {
-  page: {
-    padding: 24,
-    minHeight: "100vh",
-    color: "var(--text)",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    gap: 16,
-    marginBottom: 24,
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 600,
-    margin: 0,
-  },
-  subtitle: {
-    color: "var(--muted)",
-    maxWidth: 720,
-    lineHeight: 1.6,
-  },
-  error: {
-    color: "var(--danger)",
-    marginTop: 16,
-  },
+  page:     { color: "var(--text)" },
+  error:    { color: "var(--danger)", marginTop: 16 },
 };
 
 export default function LeaveList() {
   const { user } = useAuth();
-  const [error, setError] = useState("");
+  const [error,     setError]     = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [saving,    setSaving]    = useState(false);
   const leaves = useApi(() => get("/api/leaves"), []);
+
+  const canManage = ["ADMIN", "RH", "MANAGER"].includes(user.role);
+
+  const openModal  = () => { setError(""); setModalOpen(true); };
+  const closeModal = () => { setModalOpen(false); setError(""); };
+
+  const handleNewLeave = async (values) => {
+    setSaving(true);
+    setError("");
+    try {
+      await post("/api/leaves", values);
+      await leaves.refetch();
+      closeModal();
+    } catch (err) {
+      setError(err.message || "Impossible de soumettre la demande.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleApprove = async (leaveId) => {
     setError("");
@@ -74,20 +72,17 @@ export default function LeaveList() {
     }
   };
 
-  const canManage = ["ADMIN", "RH", "MANAGER"].includes(user.role);
-
   const columns = [
-    { key: "employeeName", label: "Employé", sortable: true },
-    { key: "type", label: "Type", sortable: true },
+    { key: "employeeName", label: "Employé",  sortable: true },
+    { key: "type",         label: "Type",      sortable: true },
     {
       key: "dateRange",
       label: "Période",
       render: (item) => formatDateRange(item.startDate, item.endDate),
-      sortable: false,
     },
-    { key: "durationDays", label: "Durée", sortable: true },
-    { key: "status", label: "Statut", sortable: true },
-    { key: "approvedByName", label: "Approuvé par", sortable: true },
+    { key: "durationDays",  label: "Durée",         sortable: true },
+    { key: "status",        label: "Statut",        sortable: true },
+    { key: "approvedByName",label: "Approuvé par",  sortable: true },
     {
       key: "actions",
       label: "Actions",
@@ -95,34 +90,23 @@ export default function LeaveList() {
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {canManage && item.status === "EN_ATTENTE" && (
             <>
-              <Button variant="success" size="sm" onClick={() => handleApprove(item.id)}>
-                Approuver
-              </Button>
-              <Button variant="danger" size="sm" onClick={() => handleReject(item.id)}>
-                Refuser
-              </Button>
+              <Button variant="success" size="sm" onClick={() => handleApprove(item.id)}>Approuver</Button>
+              <Button variant="danger"  size="sm" onClick={() => handleReject(item.id)}>Refuser</Button>
             </>
           )}
           {item.status === "EN_ATTENTE" && (
-            <Button variant="ghost" size="sm" onClick={() => handleCancel(item.id)}>
-              Annuler
-            </Button>
+            <Button variant="ghost" size="sm" onClick={() => handleCancel(item.id)}>Annuler</Button>
           )}
         </div>
       ),
-      tdStyle: { width: 220 },
+      tdStyle: { width: 240 },
     },
   ];
 
   return (
     <div style={S.page}>
-      <div style={S.header}>
-        <div>
-          <h1 style={S.title}>Demandes de congés</h1>
-          <p style={S.subtitle}>
-            Gérez toutes les demandes de congés depuis l'administration. Approuvez, refusez ou annulez les demandes en attente.
-          </p>
-        </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        <Button variant="primary" onClick={openModal}>+ Nouvelle demande</Button>
       </div>
 
       <Table
@@ -130,10 +114,35 @@ export default function LeaveList() {
         data={leaves.data || []}
         loading={leaves.loading}
         emptyMessage="Aucune demande de congé trouvée."
-        emptyHint="Les collaborateurs peuvent soumettre une demande depuis leur espace personnel."
+        emptyHint="Les collaborateurs peuvent soumettre une demande depuis leur espace."
       />
 
       {error && <div style={S.error}>{error}</div>}
+
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        title="Nouvelle demande de congé"
+        footer={
+          <>
+            <Button variant="ghost" onClick={closeModal}>Annuler</Button>
+            <Button
+              loading={saving}
+              onClick={() => document.getElementById("leave-form-list").requestSubmit()}
+            >
+              Soumettre
+            </Button>
+          </>
+        }
+      >
+        <LeaveForm
+          id="leave-form-list"
+          onSubmit={handleNewLeave}
+          onCancel={closeModal}
+          loading={saving}
+        />
+        {error && <div style={{ color: "var(--danger)", fontSize: 13, marginTop: 8 }}>{error}</div>}
+      </Modal>
     </div>
   );
 }

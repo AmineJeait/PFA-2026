@@ -32,6 +32,27 @@ public class PayrollDto {
         private BigDecimal deductions; // optional, defaults to 0
     }
 
+    // ─── Bulk request ─────────────────────────────────────────────────────
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+    public static class BulkGenerateRequest {
+        @NotNull(message = "Month is required")
+        @Min(1) @Max(12)
+        private Integer month;
+
+        @NotNull(message = "Year is required")
+        @Min(2000)
+        private Integer year;
+    }
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+    public static class BulkPayrollResult {
+        private int generated;
+        private int skipped;
+        private int failed;
+        private java.util.List<String> errors;
+    }
+
     // ─── Response ──────────────────────────────────────────────────────────
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

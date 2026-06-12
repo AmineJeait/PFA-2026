@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion RH — Diagrammes UML</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --accent: #6c63ff;
+      --bg: #f7f7fc;
+      --surface: #ffffff;
+      --border: #e0e0ef;
+      --text: #1a1a2e;
+      --muted: #6a6880;
+      --success: #15944e;
+      --warning: #b97b10;
+      --danger: #c83232;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Cover page ── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d2b5e 50%, #6c63ff 100%);
+      color: #fff;
+      text-align: center;
+      padding: 4rem 2rem;
+      page-break-after: always;
+    }
+    .cover-logo {
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 800;
+      margin-bottom: 2rem;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .cover h1 { font-size: 2.8rem; font-weight: 700; letter-spacing: -0.5px; }
+    .cover .subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem; }
+    .cover .meta { margin-top: 3rem; font-size: 0.9rem; color: rgba(255,255,255,0.5); }
+    .cover .tags {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      justify-content: center; margin-top: 1.5rem;
+    }
+    .tag {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── Page layout ── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 3rem;
+      page-break-after: always;
+    }
+
+    /* ── Actor legend pills ── */
+    .actor-legend {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
+    .actor-pill {
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1.5px solid;
+    }
+    .actor-pill.admin    { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+    .actor-pill.rh       { background:#dbeafe; border-color:#3b82f6; color:#1e3a5f; }
+    .actor-pill.manager  { background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .actor-pill.employee { background:#fef9c3; border-color:#ca8a04; color:#713f12; }
+
+    /* ── Module section headers ── */
+    .module-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .module-icon { font-size: 1.5rem; }
+    .module-title { font-size: 1.1rem; font-weight: 700; }
+    .module-sub   { font-size: 0.82rem; margin-top: 2px; opacity: 0.8; }
+
+    .auth-header   { background:#fef2f2; border-left: 4px solid #ef4444; color:#7f1d1d; }
+    .emp-header    { background:#eff6ff; border-left: 4px solid #3b82f6; color:#1e3a5f; }
+    .leave-header  { background:#f0fdf4; border-left: 4px solid #16a34a; color:#14532d; }
+    .attend-header { background:#fffbeb; border-left: 4px solid #ca8a04; color:#713f12; }
+    .pay-header    { background:#faf5ff; border-left: 4px solid #9333ea; color:#3b0764; }
+    .recr-header   { background:#f0f9ff; border-left: 4px solid #0284c7; color:#0c4a6e; }
+
+    /* ── Workflow flow note ── */
+    .flow-note {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .flow-steps {
+      display: flex; align-items: center; gap: 0.6rem;
+      flex-wrap: wrap; margin-top: 0.6rem;
+    }
+    .flow-step {
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700; border: 1.5px solid;
+    }
+    .flow-step.pending  { background:#fef9c3; border-color:#ca8a04; color:#713f12; }
+    .flow-step.approved { background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .flow-step.rejected { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+    .flow-step.draft    { background:#ede9fe; border-color:#7c3aed; color:#4c1d95; }
+    .flow-step.paid     { background:#dbeafe; border-color:#3b82f6; color:#1e3a5f; }
+    .flow-arrow { color: var(--muted); font-size: 1rem; font-weight: 400; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--accent);
+    }
+    .section-number {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+    .section-header p  { font-size: 0.9rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── Diagram card ── */
+    .diagram-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 24px rgba(108,99,255,0.07);
+      overflow-x: auto;
+    }
+    .diagram-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .diagram-card .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── Roles legend ── */
+    .legend {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ── Suggestions table ── */
+    .suggestion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .suggestion-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .suggestion-card .priority {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+    .priority.high   { background: #fde8e8; color: var(--danger); }
+    .priority.medium { background: #fef3e2; color: var(--warning); }
+    .priority.low    { background: #e8f5ee; color: var(--success); }
+    .suggestion-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .suggestion-card p  { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Roles table ── */
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #fafafa; }
+    .check { color: var(--success); font-weight: 700; }
+    .cross { color: #ccc; }
+
+    /* ── Implementation status ── */
+    .status-section { margin-bottom: 2.5rem; }
+    .status-section-title {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 0.75rem;
+    }
+    .status-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 0.9rem 1.1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.83rem;
+    }
+    .status-item .si-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .status-item .si-label { font-weight: 600; color: var(--text); line-height: 1.3; }
+    .status-item .si-sub   { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .status-done   { border-left: 3px solid #16a34a; }
+    .status-todo   { border-left: 3px solid #ca8a04; }
+
+    .sprint-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 10px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700;
+      background: #dcfce7; color: #14532d; border: 1px solid #16a34a;
+      vertical-align: middle; margin-left: 8px;
+    }
+    .sprint-badge.v1 { background:#dbeafe; color:#1e3a5f; border-color:#3b82f6; }
+    .sprint-badge.v2 { background:#dcfce7; color:#14532d; border-color:#16a34a; }
+    .sprint-badge.todo { background:#fef9c3; color:#713f12; border-color:#ca8a04; }
+
+    @media print {
+      .cover { page-break-after: always; }
+      .page   { page-break-after: always; padding: 2rem; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-logo">R</div>
+  <h1>Gestion RH</h1>
+  <p class="subtitle">Système de Gestion des Ressources Humaines</p>
+  <div class="tags">
+    <span class="tag">Spring Boot 3.3</span>
+    <span class="tag">React 19</span>
+    <span class="tag">PostgreSQL</span>
+    <span class="tag">JWT Auth</span>
+    <span class="tag">Java 17</span>
+  </div>
+  <p class="meta">Diagrammes UML · Cas d'utilisation · Diagramme de classes · Statut d'implémentation</p>
+  <div class="tags" style="margin-top:2rem">
+    <span class="tag" style="background:rgba(34,197,94,0.2);border-color:rgba(34,197,94,0.4)">✅ v1 — Backend &amp; API</span>
+    <span class="tag" style="background:rgba(34,197,94,0.2);border-color:rgba(34,197,94,0.4)">✅ v2 — Formulaires &amp; Mode Clair</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ USE CASE OVERVIEW -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div>
+      <h2>Diagrammes de Cas d'Utilisation</h2>
+      <p>Vue d'ensemble + détail par module</p>
+    </div>
+  </div>
+
+  <!-- Actor legend -->
+  <div class="actor-legend">
+    <div class="actor-pill admin">👤 ADMIN</div>
+    <div class="actor-pill rh">👤 RH</div>
+    <div class="actor-pill manager">👤 MANAGER</div>
+    <div class="actor-pill employee">👤 EMPLOYEE</div>
+  </div>
+
+  <!-- High-level overview -->
+  <div class="diagram-card">
+    <h3>🗺️ Vue d'ensemble — Acteurs & Modules</h3>
+    <div class="mermaid">
+graph LR
+    classDef admin    fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh       fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef manager  fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef employee fill:#fef9c3,stroke:#ca8a04,color:#713f12,font-weight:bold
+    classDef module   fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a,font-size:13px
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+    E((EMPLOYEE)):::employee
+
+    M1["🔐 Authentification"]:::module
+    M2["👥 Gestion Employés"]:::module
+    M3["🏢 Départements & Postes"]:::module
+    M4["🌴 Gestion des Congés"]:::module
+    M5["⏰ Présence & Pointage"]:::module
+    M6["💰 Paie & Salaires"]:::module
+    M7["📋 Recrutement"]:::module
+
+    A --> M1 & M2 & M3 & M4 & M5 & M6 & M7
+    R --> M1 & M2 & M3 & M4 & M5 & M6 & M7
+    M --> M1 & M4 & M5 & M7
+    E --> M1 & M4 & M5 & M7
+    </div>
+  </div>
+
+  <!-- Permissions matrix -->
+  <div class="diagram-card">
+    <h3>📋 Matrice des droits par rôle</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Fonctionnalité</th>
+          <th style="background:#ef4444">ADMIN</th>
+          <th style="background:#3b82f6">RH</th>
+          <th style="background:#16a34a">MANAGER</th>
+          <th style="background:#ca8a04">EMPLOYEE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>🔐 Se connecter</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td></tr>
+        <tr><td>👥 Créer / modifier / supprimer un employé</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>👁️ Voir profil d'un employé</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td></tr>
+        <tr><td>🏢 Gérer les départements & postes</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>🌴 Soumettre une demande de congé</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td></tr>
+        <tr><td>✅ Approuver / Rejeter un congé</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td></tr>
+        <tr><td>📋 Voir toutes les demandes de congé</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td></tr>
+        <tr><td>⏰ Pointer (check-in / check-out)</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td></tr>
+        <tr><td>📊 Voir tous les pointages</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>📈 Rapport mensuel de présence</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>💰 Générer / Valider / Payer la paie</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>📄 Consulter les offres d'emploi</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td></tr>
+        <tr><td>✏️ Gérer les offres d'emploi</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+        <tr><td>📨 Postuler à une offre</td><td class="cross">—</td><td class="cross">—</td><td class="cross">—</td><td class="check">✔</td></tr>
+        <tr><td>🔍 Gérer les candidatures</td><td class="check">✔</td><td class="check">✔</td><td class="cross">—</td><td class="cross">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ USE CASE — AUTH + EMPLOYEES -->
+<div class="page">
+  <div class="module-header auth-header">
+    <span class="module-icon">🔐</span>
+    <div>
+      <div class="module-title">Module 1 — Authentification</div>
+      <div class="module-sub">Connexion et accès au système</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin    fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold,rx:50
+    classDef rh       fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold,rx:50
+    classDef manager  fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold,rx:50
+    classDef employee fill:#fef9c3,stroke:#ca8a04,color:#713f12,font-weight:bold,rx:50
+    classDef uc       fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a,rx:30
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+    E((EMPLOYEE)):::employee
+
+    subgraph SYS["  Système — Authentification  "]
+        UC1(["🔑 Se connecter\navec email + mot de passe"]):::uc
+        UC2(["📝 Créer un compte\n(inscription)"]):::uc
+        UC3(["🚪 Se déconnecter"]):::uc
+        UC4(["🔄 Renouvellement\nautomatique du token JWT"]):::uc
+    end
+
+    A --> UC1 & UC2 & UC3
+    R --> UC1 & UC3
+    M --> UC1 & UC3
+    E --> UC1 & UC3
+    UC1 -.->|"«include»"| UC4
+    </div>
+  </div>
+
+  <div class="module-header emp-header" style="margin-top:2.5rem">
+    <span class="module-icon">👥</span>
+    <div>
+      <div class="module-title">Module 2 — Gestion des Employés & Départements</div>
+      <div class="module-sub">Administration des ressources humaines</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin   fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh      fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef manager fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef uc      fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+
+    subgraph EMP["  Employés  "]
+        direction TB
+        E1(["➕ Créer un employé"]):::uc
+        E2(["✏️ Modifier un employé"]):::uc
+        E3(["🗑️ Supprimer un employé"]):::uc
+        E4(["🔍 Rechercher un employé"]):::uc
+        E5(["👤 Voir le profil détaillé"]):::uc
+        E6(["🔗 Assigner un manager"]):::uc
+        E7(["🏢 Assigner un département"]):::uc
+    end
+
+    subgraph DEPT["  Départements & Postes  "]
+        direction TB
+        D1(["➕ Créer un département"]):::uc
+        D2(["✏️ Modifier un département"]):::uc
+        D3(["🗑️ Supprimer un département"]):::uc
+        D4(["👑 Définir le chef de département"]):::uc
+        D5(["📌 Créer / gérer les postes"]):::uc
+    end
+
+    A --> E1 & E2 & E3 & E4 & E5 & E6 & E7
+    A --> D1 & D2 & D3 & D4 & D5
+    R --> E1 & E2 & E4 & E5 & E6 & E7
+    R --> D1 & D2 & D4 & D5
+    M --> E4 & E5
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ USE CASE — LEAVES + ATTENDANCE -->
+<div class="page">
+  <div class="module-header leave-header">
+    <span class="module-icon">🌴</span>
+    <div>
+      <div class="module-title">Module 3 — Gestion des Congés</div>
+      <div class="module-sub">Demandes, approbations et suivi des absences</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin    fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh       fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef manager  fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef employee fill:#fef9c3,stroke:#ca8a04,color:#713f12,font-weight:bold
+    classDef uc       fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+    E((EMPLOYEE)):::employee
+
+    subgraph SYS["  Gestion des Congés  "]
+        direction TB
+        L1(["📩 Soumettre une demande\nde congé"]):::uc
+        L2(["📋 Voir toutes les\ndemandes de congé"]):::uc
+        L3(["🕐 Voir ses propres\ndemandes"]):::uc
+        L4(["✅ Approuver une demande"]):::uc
+        L5(["❌ Rejeter une demande\navec commentaire"]):::uc
+        L6(["🗑️ Annuler sa propre\ndemande"]):::uc
+    end
+
+    A & R & M & E --> L1
+    A & R & M     --> L2
+    A & R & M & E --> L3
+    A & R & M     --> L4
+    A & R & M     --> L5
+    E             --> L6
+    </div>
+  </div>
+
+  <div class="flow-note">
+    <strong>Workflow :</strong>
+    <div class="flow-steps">
+      <div class="flow-step pending">EN_ATTENTE</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step approved">APPROUVÉ</div>
+      <div class="flow-arrow">ou</div>
+      <div class="flow-step rejected">REJETÉ</div>
+    </div>
+  </div>
+
+  <div class="module-header attend-header" style="margin-top:2.5rem">
+    <span class="module-icon">⏰</span>
+    <div>
+      <div class="module-title">Module 4 — Présence & Pointage</div>
+      <div class="module-sub">Suivi quotidien des entrées et sorties</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin    fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh       fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef manager  fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef employee fill:#fef9c3,stroke:#ca8a04,color:#713f12,font-weight:bold
+    classDef uc       fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+    E((EMPLOYEE)):::employee
+
+    subgraph SYS["  Présence & Pointage  "]
+        direction TB
+        T1(["🟢 Pointer l'arrivée\n(check-in)"]):::uc
+        T2(["🔴 Pointer le départ\n(check-out)"]):::uc
+        T3(["📅 Voir son propre\npointage du jour"]):::uc
+        T4(["📊 Voir tous les\npointages (global)"]):::uc
+        T5(["👤 Voir les pointages\nd'un employé"]):::uc
+        T6(["📈 Rapport mensuel\nde présence"]):::uc
+        T7(["🔢 Calcul automatique\ndes heures travaillées"]):::uc
+    end
+
+    A & R & M & E --> T1
+    A & R & M & E --> T2
+    A & R & M & E --> T3
+    A & R         --> T4
+    A & R         --> T5
+    A & R         --> T6
+    T1 -.->|"«include»"| T7
+    T2 -.->|"«include»"| T7
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ USE CASE — PAYROLL + RECRUITMENT -->
+<div class="page">
+  <div class="module-header pay-header">
+    <span class="module-icon">💰</span>
+    <div>
+      <div class="module-title">Module 5 — Gestion de la Paie</div>
+      <div class="module-sub">Génération et validation des fiches de paie</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh    fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef uc    fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+
+    subgraph SYS["  Gestion de la Paie  "]
+        direction TB
+        P1(["⚙️ Générer la fiche de paie\n(mois + année)"]):::uc
+        P2(["🧮 Calcul automatique\nCNSS · AMO · IR · Net"]):::uc
+        P3(["✔️ Valider la fiche\nde paie"]):::uc
+        P4(["💳 Marquer comme payé"]):::uc
+        P5(["📄 Consulter les fiches\nde paie"]):::uc
+        P6(["🔎 Voir la fiche\nd'un employé"]):::uc
+    end
+
+    A & R --> P1
+    A & R --> P3
+    A & R --> P4
+    A & R --> P5
+    A & R --> P6
+    P1 -.->|"«include»"| P2
+    </div>
+  </div>
+
+  <div class="flow-note">
+    <strong>Workflow paie :</strong>
+    <div class="flow-steps">
+      <div class="flow-step draft">BROUILLON</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step approved">VALIDÉ</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step paid">PAYÉ</div>
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.82rem;color:var(--muted)">
+      Cotisations calculées automatiquement : CNSS 4.48% · AMO 2.26% · IR progressif
+    </div>
+  </div>
+
+  <div class="module-header recr-header" style="margin-top:2.5rem">
+    <span class="module-icon">📋</span>
+    <div>
+      <div class="module-title">Module 6 — Recrutement</div>
+      <div class="module-sub">Offres d'emploi et gestion des candidatures</div>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    classDef admin    fill:#fee2e2,stroke:#ef4444,color:#7f1d1d,font-weight:bold
+    classDef rh       fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f,font-weight:bold
+    classDef manager  fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef employee fill:#fef9c3,stroke:#ca8a04,color:#713f12,font-weight:bold
+    classDef uc       fill:#f3f0ff,stroke:#6c63ff,color:#2e1f7a
+
+    A((ADMIN)):::admin
+    R((RH)):::rh
+    M((MANAGER)):::manager
+    E((EMPLOYEE)):::employee
+
+    subgraph OFFERS["  Offres d'emploi  "]
+        direction TB
+        J1(["➕ Créer une offre d'emploi"]):::uc
+        J2(["✏️ Modifier une offre"]):::uc
+        J3(["🔒 Fermer / Annuler\nune offre"]):::uc
+        J4(["👁️ Consulter les offres"]):::uc
+    end
+
+    subgraph APPS["  Candidatures  "]
+        direction TB
+        C1(["📨 Postuler à une offre\n(CV + lettre)"]):::uc
+        C2(["📋 Voir les candidatures\nd'une offre"]):::uc
+        C3(["🔄 Changer le statut\nd'une candidature"]):::uc
+    end
+
+    A & R --> J1 & J2 & J3 & J4
+    M & E --> J4
+    E      --> C1
+    A & R  --> C2 & C3
+    </div>
+  </div>
+
+  <div class="flow-note">
+    <strong>Workflow candidature :</strong>
+    <div class="flow-steps">
+      <div class="flow-step pending">REÇU</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step draft">EN COURS</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step pending" style="background:#ede9fe;color:#4c1d95;border-color:#7c3aed">ENTRETIEN</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step approved">ACCEPTÉ</div>
+      <div class="flow-arrow">ou</div>
+      <div class="flow-step rejected">REFUSÉ</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ CLASS DIAGRAM -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div>
+      <h2>Diagramme de Classes</h2>
+      <p>Modèle de données — entités JPA & relations</p>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <h3>🗂️ Entités principales & relations</h3>
+    <div class="mermaid">
+classDiagram
+    direction TB
+
+    class User {
+        +Long id
+        +String email
+        +String password
+        +Role role
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+    }
+
+    class Employee {
+        +Long id
+        +String firstName
+        +String lastName
+        +String email
+        +String phone
+        +LocalDate dob
+        +String cin
+        +String address
+        +LocalDate hireDate
+        +ContractType contractType
+        +BigDecimal baseSalary
+        +EmployeeStatus status
+    }
+
+    class Department {
+        +Long id
+        +String name
+        +String description
+    }
+
+    class Position {
+        +Long id
+        +String title
+        +String description
+    }
+
+    class LeaveRequest {
+        +Long id
+        +LeaveType type
+        +LocalDate startDate
+        +LocalDate endDate
+        +String reason
+        +LeaveStatus status
+        +LocalDateTime approvedAt
+        +String approverComment
+    }
+
+    class Attendance {
+        +Long id
+        +LocalDate date
+        +LocalDateTime checkIn
+        +LocalDateTime checkOut
+        +AttendanceStatus status
+        +Double hoursWorked
+    }
+
+    class Payroll {
+        +Long id
+        +Integer month
+        +Integer year
+        +BigDecimal baseSalary
+        +BigDecimal bonuses
+        +BigDecimal deductions
+        +BigDecimal cnss
+        +BigDecimal amo
+        +BigDecimal ir
+        +BigDecimal netSalary
+        +PayrollStatus status
+    }
+
+    class JobOffer {
+        +Long id
+        +String title
+        +String description
+        +String requiredSkills
+        +LocalDate closingDate
+        +JobStatus status
+    }
+
+    class Application {
+        +Long id
+        +String candidateName
+        +String candidateEmail
+        +String cvUrl
+        +String coverLetter
+        +ApplicationStatus status
+        +String notes
+    }
+
+    User "1" --o "1" Employee : linked account
+    Employee "N" --> "1" Department : belongs to
+    Employee "N" --> "1" Position : holds
+    Employee "N" --> "0..1" Employee : managed by
+    Department "1" --> "0..1" Employee : headed by
+    Position "N" --> "1" Department : belongs to
+
+    Employee "1" --> "N" LeaveRequest : submits
+    Employee "1" --> "N" LeaveRequest : approves
+    Employee "1" --> "N" Attendance : records
+    Employee "1" --> "N" Payroll : receives
+
+    JobOffer "N" --> "1" Department : posted in
+    JobOffer "N" --> "1" Position : for role
+    JobOffer "1" --> "N" Application : receives
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <h3>📊 Énumérations</h3>
+    <div class="mermaid">
+classDiagram
+    direction LR
+
+    class Role {
+        <<enumeration>>
+        ADMIN
+        RH
+        MANAGER
+        EMPLOYEE
+    }
+
+    class ContractType {
+        <<enumeration>>
+        CDI
+        CDD
+        STAGE
+        FREELANCE
+    }
+
+    class EmployeeStatus {
+        <<enumeration>>
+        ACTIF
+        INACTIF
+        EN_CONGE
+        SUSPENDU
+    }
+
+    class LeaveType {
+        <<enumeration>>
+        CONGE_PAYE
+        MALADIE
+        MATERNITE
+        SANS_SOLDE
+        AUTRE
+    }
+
+    class LeaveStatus {
+        <<enumeration>>
+        EN_ATTENTE
+        APPROUVE
+        REJETE
+    }
+
+    class AttendanceStatus {
+        <<enumeration>>
+        PRESENT
+        ABSENT
+        RETARD
+        DEMI_JOURNEE
+    }
+
+    class PayrollStatus {
+        <<enumeration>>
+        BROUILLON
+        VALIDE
+        PAYE
+    }
+
+    class JobStatus {
+        <<enumeration>>
+        OUVERT
+        FERME
+        ANNULE
+    }
+
+    class ApplicationStatus {
+        <<enumeration>>
+        RECU
+        EN_COURS
+        ENTRETIEN
+        ACCEPTE
+        REFUSE
+    }
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ IMPLEMENTATION STATUS -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div>
+      <h2>Statut d'Implémentation</h2>
+      <p>Ce qui est livré, ce qui reste à faire</p>
+    </div>
+  </div>
+
+  <!-- V1 — Backend -->
+  <div class="status-section">
+    <div class="status-section-title" style="color:#1e3a5f">
+      <span>🔵</span> Sprint 1 — Backend &amp; API REST
+      <span class="sprint-badge v1">v1 · Livré</span>
+    </div>
+    <div class="status-grid">
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Authentification JWT</div><div class="si-sub">Login · Register · BCrypt · token 24h</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Gestion des employés — API</div><div class="si-sub">CRUD complet · Search · Relations manager/dept</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Gestion des congés — API</div><div class="si-sub">Workflow EN_ATTENTE → APPROUVÉ/REJETÉ</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Présence & pointage — API</div><div class="si-sub">Check-in/out · Calcul heures · Rapport mensuel</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Paie — API</div><div class="si-sub">Génération · CNSS 4.48% · AMO 2.26% · IR · Net</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Recrutement — API</div><div class="si-sub">Offres · Candidatures · Statuts pipeline</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Départements & Postes — API</div><div class="si-sub">CRUD · Chef de département · Postes liés</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Contrôle d'accès par rôle</div><div class="si-sub">ADMIN · RH · MANAGER · EMPLOYEE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V2 — Frontend -->
+  <div class="status-section">
+    <div class="status-section-title" style="color:#14532d">
+      <span>🟢</span> Sprint 2 — Frontend complet &amp; Formulaires
+      <span class="sprint-badge v2">v2 · Livré</span>
+    </div>
+    <div class="status-grid">
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Formulaire création d'employé</div><div class="si-sub">Tous les champs · email · mot de passe · rôle</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Formulaire modification d'employé</div><div class="si-sub">Modal depuis la liste et la fiche détail</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Suppression d'employé</div><div class="si-sub">Bouton ADMIN avec confirmation</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Formulaire demande de congé</div><div class="si-sub">Type · dates · durée calculée · motif</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Soumettre un congé — MyLeaves</div><div class="si-sub">Bouton "Nouvelle demande" + modal</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Soumettre un congé — LeaveList</div><div class="si-sub">Accessible aux ADMIN · RH · MANAGER</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Formulaire génération de paie</div><div class="si-sub">Employé · mois · année · primes · déductions</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Formulaire offre d'emploi</div><div class="si-sub">Création · modification · suppression (ADMIN/RH)</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Rapport mensuel de présence</div><div class="si-sub">Sélecteur mois/année · stats + tableau coloré</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Mode clair / sombre</div><div class="si-sub">Toggle ☀️/🌙 · persistance localStorage</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Modal responsive (CSS vars)</div><div class="si-sub">Thème clair/sombre appliqué aux modals</div></div>
+      </div>
+      <div class="status-item status-done">
+        <span class="si-icon">✅</span>
+        <div><div class="si-label">Boutons d'action sur chaque liste</div><div class="si-sub">Modifier · Supprimer sur toutes les pages de liste</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remaining -->
+  <div class="status-section">
+    <div class="status-section-title" style="color:#713f12">
+      <span>🟡</span> Restant — Prochains sprints
+      <span class="sprint-badge todo">À faire</span>
+    </div>
+    <div class="status-grid">
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Dashboard avec KPIs &amp; graphiques</div><div class="si-sub">Effectif · taux présence · masse salariale</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Export PDF des fiches de paie</div><div class="si-sub">Génération côté backend (JasperReports / iText)</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Réinitialisation mot de passe</div><div class="si-sub">Flux email "oublié" — SMTP non configuré</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Pagination des listes</div><div class="si-sub">findAll() → Pageable côté backend</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Notifications en temps réel</div><div class="si-sub">WebSocket ou SSE pour alertes approbations</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Organigramme interactif</div><div class="si-sub">Hiérarchie départements → managers → employés</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Journal d'audit</div><div class="si-sub">Traçabilité : qui · quoi · quand</div></div>
+      </div>
+      <div class="status-item status-todo">
+        <span class="si-icon">🔲</span>
+        <div><div class="si-label">Évaluations de performance</div><div class="si-sub">Cycles annuels · notation · objectifs</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ ARCHITECTURE -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div>
+      <h2>Architecture &amp; Suggestions</h2>
+      <p>Vue technique du système et pistes d'évolution</p>
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <h3>🏗️ Architecture complète — v2</h3>
+    <div class="mermaid">
+graph TB
+    subgraph Frontend["⚛️ Frontend — React 19 + Vite"]
+        direction TB
+        subgraph Pages["Pages (17 routes actives)"]
+            P1["👥 Employés\n(liste · détail · création · édition)"]
+            P2["🌴 Congés\n(liste · mes congés · formulaire)"]
+            P3["⏰ Présence\n(pointage · rapport mensuel)"]
+            P4["💰 Paie\n(liste · détail · génération)"]
+            P5["📋 Recrutement\n(offres · candidatures · postulation)"]
+            P6["🏢 Départements\n(liste · création · édition)"]
+        end
+        subgraph State["Contextes & Hooks"]
+            AuthCtx["AuthContext\n(JWT · sessionStorage)"]
+            ThemeCtx["ThemeContext\n(Dark/Light · localStorage)"]
+            useApi["useApi\n(fetch · loading · error · refetch)"]
+        end
+        subgraph UI["Composants UI"]
+            UIComp["Table · Button · Badge\nModal · Spinner · EmptyState"]
+        end
+    end
+
+    subgraph Backend["☕ Backend — Spring Boot 3.3.5 / Java 17"]
+        direction TB
+        Controllers["7 Controllers REST\n/api/auth · /api/employees · /api/leaves\n/api/attendance · /api/payroll · /api/jobs · /api/departments"]
+        Services["7 Services\n(logique métier · calculs paie · workflows)"]
+        Security["Spring Security\n(JWT Filter · BCrypt · @PreAuthorize)"]
+        Repos["9 Repositories\n(Spring Data JPA)"]
+    end
+
+    subgraph DB["🐘 PostgreSQL — gestion_rh"]
+        Tables["9 tables\nusers · employees · departments · positions\nleave_requests · attendances · payrolls\njob_offers · applications"]
+    end
+
+    Frontend -- "HTTP/REST · Bearer token" --> Backend
+    Backend -- "JPA / Hibernate · DDL auto" --> DB
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <h3>💡 Suggestions d'évolution prioritaires</h3>
+    <div class="suggestion-grid">
+
+      <div class="suggestion-card">
+        <span class="priority high">Haute priorité</span>
+        <h4>📊 Dashboard KPIs &amp; graphiques</h4>
+        <p>Intégrer Recharts ou Chart.js : effectif par département, taux de présence mensuel, répartition des types de congés, masse salariale.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority high">Haute priorité</span>
+        <h4>📄 Export PDF des bulletins</h4>
+        <p>Backend : générer des PDFs avec iText ou JasperReports. Frontend : bouton "Télécharger" sur PayrollDetail.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority high">Haute priorité</span>
+        <h4>📦 Pagination des API</h4>
+        <p>Remplacer <code>findAll()</code> par <code>findAll(Pageable)</code> côté backend. Ajouter des contrôles page/taille côté frontend.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority high">Haute priorité</span>
+        <h4>🔑 Réinitialisation mot de passe</h4>
+        <p>Configurer JavaMailSender (SMTP). Endpoint <code>/api/auth/forgot-password</code> → lien token par email.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority medium">Priorité moyenne</span>
+        <h4>🔔 Notifications temps réel</h4>
+        <p>WebSocket (Spring WebSocket) ou SSE pour alerter les managers d'une nouvelle demande de congé.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority medium">Priorité moyenne</span>
+        <h4>🌳 Organigramme interactif</h4>
+        <p>Visualisation de la hiérarchie avec React Flow ou D3.js — départements, chefs, managers, employés.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority medium">Priorité moyenne</span>
+        <h4>📝 Journal d'audit</h4>
+        <p>Entité AuditLog avec Hibernate Envers. Tracer : qui a modifié quoi et quand — obligatoire pour la conformité RH.</p>
+      </div>
+
+      <div class="suggestion-card">
+        <span class="priority low">Priorité basse</span>
+        <h4>⭐ Évaluations de performance</h4>
+        <p>Module dédié : cycles annuels/trimestriels, notation 1–5, objectifs SMART, commentaires manager/employé.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "default",
+    themeVariables: {
+      primaryColor: "#6c63ff",
+      primaryTextColor: "#1a1a2e",
+      primaryBorderColor: "#6c63ff",
+      lineColor: "#6a6880",
+      secondaryColor: "#f0effe",
+      tertiaryColor: "#f7f7fc",
+      edgeLabelBackground: "#f7f7fc",
+      fontFamily: "Segoe UI, system-ui, sans-serif",
+    },
+    classDiagram: { useMaxWidth: false },
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+  });
+</script>
+</body>
+</html>

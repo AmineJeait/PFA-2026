@@ -64,6 +64,14 @@ public class EmployeeDto {
     }
 
     @Data
+    public static class UpdateMyProfileRequest {
+        private String phone;
+        private String address;
+        private LocalDate dateOfBirth;
+        private String cin;
+    }
+
+    @Data
     @Builder
     public static class Response {
         private Long id;
@@ -80,6 +88,8 @@ public class EmployeeDto {
         private BigDecimal baseSalary;
         private String managerName;
         private Long managerId;
+        private String departmentName;
+        private Long departmentId;
         private LocalDateTime createdAt;
 
         public static Response fromEntity(Employee e) {
@@ -98,6 +108,8 @@ public class EmployeeDto {
                     .baseSalary(e.getBaseSalary())
                     .managerName(e.getManager() != null ? e.getManager().getFullName() : null)
                     .managerId(e.getManager() != null ? e.getManager().getId() : null)
+                    .departmentName(e.getDepartment() != null ? e.getDepartment().getName() : null)
+                    .departmentId(e.getDepartment() != null ? e.getDepartment().getId() : null)
                     .createdAt(e.getCreatedAt())
                     .build();
         }

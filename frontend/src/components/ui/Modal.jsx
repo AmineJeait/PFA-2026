@@ -12,8 +12,8 @@ const S = {
     padding:        "1rem",
   },
   card: (width) => ({
-    background:   "#1e1e24",
-    border:       "1px solid #2a2a38",
+    background:   "var(--card)",
+    border:       "1px solid var(--border)",
     borderRadius: 16,
     width:        "100%",
     maxWidth:     width,
@@ -27,19 +27,19 @@ const S = {
     alignItems:     "center",
     justifyContent: "space-between",
     padding:        "18px 24px 16px",
-    borderBottom:   "1px solid #2a2a38",
+    borderBottom:   "1px solid var(--border)",
     flexShrink:     0,
   },
   title: {
     fontSize:   16,
     fontWeight: 600,
-    color:      "#f0effe",
+    color:      "var(--text)",
     margin:     0,
   },
   closeBtn: {
     background:  "transparent",
     border:      "none",
-    color:       "#555470",
+    color:       "var(--dim)",
     fontSize:    20,
     cursor:      "pointer",
     lineHeight:  1,
@@ -55,7 +55,7 @@ const S = {
   },
   footer: {
     padding:      "14px 24px",
-    borderTop:    "1px solid #2a2a38",
+    borderTop:    "1px solid var(--border)",
     display:      "flex",
     justifyContent:"flex-end",
     gap:          8,
@@ -105,8 +105,8 @@ export default function Modal({ open, onClose, title, width = 520, footer, child
           <button
             style={S.closeBtn}
             onClick={onClose}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#f0effe")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#555470")}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--dim)")}
             aria-label="Fermer"
           >
             ✕

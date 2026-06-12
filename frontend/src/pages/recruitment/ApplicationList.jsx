@@ -9,27 +9,7 @@ import { formatDate } from "../../utils/formatDate";
 
 const S = {
   page: {
-    padding: 24,
-    minHeight: "100vh",
     color: "var(--text)",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    gap: 16,
-    marginBottom: 24,
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 600,
-    margin: 0,
-  },
-  subtitle: {
-    color: "var(--muted)",
-    maxWidth: 720,
-    lineHeight: 1.6,
   },
   error: {
     color: "var(--danger)",
@@ -72,7 +52,7 @@ export default function ApplicationList() {
       label: "CV",
       render: (item) => (
         item.cvUrl ? (
-          <a href={item.cvUrl} target="_blank" rel="noreferrer" style={{ color: "#8b83ff" }}>
+          <a href={item.cvUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>
             Voir
           </a>
         ) : "—"
@@ -101,13 +81,7 @@ export default function ApplicationList() {
 
   return (
     <div style={S.page}>
-      <div style={S.header}>
-        <div>
-          <h1 style={S.title}>Candidatures</h1>
-          <p style={S.subtitle}>
-            Suivez les candidatures reçues pour l'offre sélectionnée et mettez à jour leur statut.
-          </p>
-        </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
         <Button variant="ghost" onClick={() => navigate("/recruitment")}>Retour</Button>
       </div>
 

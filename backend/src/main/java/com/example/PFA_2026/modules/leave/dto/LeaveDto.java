@@ -32,6 +32,16 @@ public class LeaveDto {
         private String comments;
     }
 
+    // ─── Balance ──────────────────────────────────────────────────────────
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+    public static class LeaveBalanceResponse {
+        private String type;
+        private int allowedDays;
+        private int usedDays;
+        private int remainingDays;
+    }
+
     // ─── Response ──────────────────────────────────────────────────────────
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

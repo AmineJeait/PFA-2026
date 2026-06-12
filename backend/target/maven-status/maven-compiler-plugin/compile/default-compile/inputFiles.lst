@@ -9,7 +9,6 @@
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/entity/Attendance.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/repository/AttendanceRepository.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/attendance/service/AttendanceService.java
-/home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/AuthController.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/controller/AuthController.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/dto/AuthDto.java
 /home/thor/software/PFA-2026/backend/src/main/java/com/example/PFA_2026/modules/auth/entity/User.java

@@ -24,34 +24,23 @@ const SIZE = {
 
 const VARIANT = {
   primary: {
-    base:  { background: "#6c63ff", color: "#fff",     borderColor: "#6c63ff" },
-    hover: { background: "#7b73ff", borderColor: "#7b73ff" },
+    base:  { background: "var(--accent)",       color: "#fff",               borderColor: "var(--accent)" },
+    hover: { background: "var(--accent-hover)",  borderColor: "var(--accent-hover)" },
   },
   ghost: {
-    base:  { background: "transparent", color: "#8886a0", borderColor: "#2a2a38" },
-    hover: { background: "rgba(255,255,255,0.04)", color: "#c4c2dc" },
+    base:  { background: "transparent",         color: "var(--muted)",       borderColor: "var(--border)" },
+    hover: { background: "var(--accent-dim)",   color: "var(--text-2)",      borderColor: "var(--border)" },
   },
   danger: {
-    base:  { background: "rgba(240,82,82,0.12)", color: "#f05252", borderColor: "rgba(240,82,82,0.3)" },
+    base:  { background: "rgba(240,82,82,0.12)", color: "var(--danger)",     borderColor: "rgba(240,82,82,0.3)" },
     hover: { background: "rgba(240,82,82,0.2)",  borderColor: "rgba(240,82,82,0.5)" },
   },
   success: {
-    base:  { background: "rgba(34,199,122,0.12)", color: "#22c77a", borderColor: "rgba(34,199,122,0.3)" },
+    base:  { background: "rgba(34,199,122,0.12)", color: "var(--success)",   borderColor: "rgba(34,199,122,0.3)" },
     hover: { background: "rgba(34,199,122,0.2)",  borderColor: "rgba(34,199,122,0.5)" },
   },
 };
 
-/**
- * Props:
- *   variant   "primary" | "ghost" | "danger" | "success"  (default: "primary")
- *   size      "sm" | "md" | "lg"                          (default: "md")
- *   loading   boolean
- *   disabled  boolean
- *   onClick   function
- *   type      "button" | "submit"                         (default: "button")
- *   fullWidth boolean
- *   children
- */
 export default function Button({
   variant  = "primary",
   size     = "md",

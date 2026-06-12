@@ -9,8 +9,10 @@ import com.example.PFA_2026.modules.recruitment.entity.Application;
 import com.example.PFA_2026.modules.recruitment.entity.JobOffer;
 import com.example.PFA_2026.modules.recruitment.repository.ApplicationRepository;
 import com.example.PFA_2026.modules.recruitment.repository.JobOfferRepository;
+import com.example.PFA_2026.modules.employee.repository.EmployeeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class RecruitmentService {
     private final ApplicationRepository applicationRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
+    private final EmployeeRepository employeeRepository;
 
     // ─── Job Offer ─────────────────────────────────────────────────────────
 
@@ -152,6 +155,19 @@ public class RecruitmentService {
         }
 
         return RecruitmentDto.ApplicationResponse.fromEntity(applicationRepository.save(application));
+    }
+
+    @Transactional(readOnly = true)
+    public List<RecruitmentDto.ApplicationResponse> getMyApplications() {
+        String loginEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        // Resolve the employee's own email (may differ from login email)
+        String candidateEmail = employeeRepository.findByUserEmail(loginEmail)
+                .map(e -> e.getEmail())
+                .orElse(loginEmail);
+        return applicationRepository.findByCandidateEmail(candidateEmail)
+                .stream()
+                .map(RecruitmentDto.ApplicationResponse::fromEntity)
+                .toList();
     }
 
     // ─── Helper ────────────────────────────────────────────────────────────

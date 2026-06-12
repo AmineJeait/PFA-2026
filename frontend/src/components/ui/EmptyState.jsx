@@ -1,9 +1,3 @@
-/**
- * Props:
- *   message  string   — main message      (default "Aucun résultat")
- *   hint     string   — secondary hint    (optional)
- *   action   node     — a Button to render below (optional)
- */
 export default function EmptyState({
   message = "Aucun résultat",
   hint,
@@ -26,14 +20,14 @@ export default function EmptyState({
         style={{
           fontSize:   14,
           fontWeight: 500,
-          color:      "#8886a0",
+          color:      "var(--muted)",
           margin:     0,
         }}
       >
         {message}
       </p>
       {hint && (
-        <p style={{ fontSize: 12, color: "#555470", margin: 0 }}>{hint}</p>
+        <p style={{ fontSize: 12, color: "var(--dim)", margin: 0 }}>{hint}</p>
       )}
       {action && <div style={{ marginTop: 8 }}>{action}</div>}
     </div>

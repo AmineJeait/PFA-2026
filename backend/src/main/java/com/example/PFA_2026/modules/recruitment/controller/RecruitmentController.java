@@ -54,7 +54,7 @@ public class RecruitmentController {
     }
 
     @DeleteMapping("/api/jobs/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH')")
     public ResponseEntity<ApiResponse<Void>> deleteJobOffer(@PathVariable Long id) {
         recruitmentService.deleteJobOffer(id);
         return ResponseEntity.ok(ApiResponse.ok("Job offer deleted successfully", null));
@@ -78,6 +78,13 @@ public class RecruitmentController {
             @PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Applications fetched successfully",
                 recruitmentService.getApplicationsByJobOffer(id)));
+    }
+
+    @GetMapping("/api/applications/my")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RH', 'MANAGER', 'EMPLOYEE')")
+    public ResponseEntity<ApiResponse<List<RecruitmentDto.ApplicationResponse>>> getMyApplications() {
+        return ResponseEntity.ok(ApiResponse.ok("Your applications fetched successfully",
+                recruitmentService.getMyApplications()));
     }
 
     @PutMapping("/api/applications/{id}/status")

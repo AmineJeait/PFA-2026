@@ -30,7 +30,7 @@ const S = {
     display: "flex",
     height: "100vh",
     overflow: "hidden",
-    background: "#0f0f13",
+    background: "var(--bg)",
     fontFamily: "'DM Sans', sans-serif",
   },
   main: {

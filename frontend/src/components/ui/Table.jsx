@@ -7,8 +7,8 @@ const S = {
     width:        "100%",
     overflowX:    "auto",
     borderRadius: 12,
-    border:       "1px solid #2a2a38",
-    background:   "#18181e",
+    border:       "1px solid var(--border)",
+    background:   "var(--surface)",
   },
   table: {
     width:          "100%",
@@ -21,14 +21,14 @@ const S = {
     textAlign:     "left",
     fontSize:      11,
     fontWeight:    600,
-    color:         sorted ? "#8b83ff" : "#555470",
+    color:         sorted ? "var(--accent)" : "var(--dim)",
     letterSpacing: "0.5px",
     textTransform: "uppercase",
-    borderBottom:  "1px solid #2a2a38",
+    borderBottom:  "1px solid var(--border)",
     whiteSpace:    "nowrap",
     userSelect:    "none",
     cursor:        "pointer",
-    background:    "#18181e",
+    background:    "var(--surface)",
   }),
   thInner: {
     display:    "inline-flex",
@@ -38,17 +38,17 @@ const S = {
   sortIcon: (dir) => ({
     fontSize:   10,
     opacity:    dir ? 1 : 0.3,
-    color:      "#8b83ff",
+    color:      "var(--accent)",
   }),
   tr: (clickable, hovered) => ({
-    borderBottom: "1px solid #2a2a38",
+    borderBottom: "1px solid var(--border)",
     cursor:       clickable ? "pointer" : "default",
     transition:   "background .1s",
-    background:   hovered ? "#1e1e26" : "transparent",
+    background:   hovered ? "var(--card)" : "transparent",
   }),
   td: {
     padding:    "11px 14px",
-    color:      "#c4c2dc",
+    color:      "var(--text-2)",
     verticalAlign: "middle",
   },
   loadingCell: {
@@ -81,16 +81,6 @@ function Row({ row, columns, onRowClick }) {
   );
 }
 
-/**
- * Props:
- *   columns     { key, label, render?, sortable?, tdStyle? }[]
- *   data        array of row objects
- *   loading     boolean
- *   onRowClick  (row) => void   — optional, makes rows clickable
- *   emptyMessage string
- *   emptyHint    string
- *   keyField    string          — field used as React key (default "id")
- */
 export default function Table({
   columns      = [],
   data         = [],

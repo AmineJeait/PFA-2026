@@ -31,8 +31,20 @@ export const NAV_ITEMS = [
     roles: [A, R],
   },
   {
+    label: "Statistiques",
+    path: "/stats",
+    icon: "◈",
+    roles: [A, R],
+  },
+  {
     type: "divider",
     label: "MON ESPACE",
+    roles: [A, R, M, E],
+  },
+  {
+    label: "Mon profil",
+    path: "/profile",
+    icon: "◉",
     roles: [A, R, M, E],
   },
   {

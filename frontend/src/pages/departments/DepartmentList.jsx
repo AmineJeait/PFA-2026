@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { get, post, put, del } from "../../api/client";
 import { useAuth } from "../../hooks/useAuth";
 import { useApi } from "../../hooks/useApi";
@@ -9,32 +10,14 @@ import DepartmentForm from "./DepartmentForm";
 
 const S = {
   page: {
-    padding: 24,
-    minHeight: "100vh",
     color: "var(--text)",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 16,
-    marginBottom: 24,
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 600,
-    margin: 0,
-  },
-  description: {
-    color: "var(--muted)",
-    maxWidth: 680,
-    lineHeight: 1.6,
   },
   controls: {
     display: "flex",
     gap: 10,
     flexWrap: "wrap",
+    marginBottom: 16,
+    justifyContent: "flex-end",
   },
   error: {
     marginTop: 16,
@@ -43,6 +26,7 @@ const S = {
 };
 
 export default function DepartmentList() {
+  const navigate  = useNavigate();
   const { user } = useAuth();
   const canManage = ["ADMIN", "RH"].includes(user?.role);
 
@@ -112,6 +96,13 @@ export default function DepartmentList() {
           <Button
             variant="ghost"
             size="sm"
+            onClick={(e) => { e.stopPropagation(); navigate(`/departments/${department.id}`); }}
+          >
+            Voir
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={(event) => {
               event.stopPropagation();
               openEdit(department);
@@ -140,22 +131,13 @@ export default function DepartmentList() {
 
   return (
     <div style={S.page}>
-      <div style={S.header}>
-        <div>
-          <h1 style={S.title}>Départements</h1>
-          <p style={S.description}>
-            Gérez la structure organisationnelle, ajoutez des départements et mettez à jour leurs informations.
-          </p>
-        </div>
-
+      {canManage && (
         <div style={S.controls}>
-          {canManage && (
-            <Button variant="primary" onClick={openCreate}>
-              Nouveau département
-            </Button>
-          )}
+          <Button variant="primary" onClick={openCreate}>
+            Nouveau département
+          </Button>
         </div>
-      </div>
+      )}
 
       <Table
         columns={columns}
